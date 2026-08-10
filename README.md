@@ -1,6 +1,6 @@
 # 🔐 Policy-Based Access Control (PBAC) System
 
-> An enterprise-style authorization system built with Java 17 and Spring Boot 3, providing dynamic policy evaluation, JWT authentication, Redis caching, PostgreSQL persistence, and immutable audit logging.
+> A full-stack authorization platform with a Java 17 / Spring Boot backend and Next.js / TypeScript frontend, implementing JWT authentication, dynamic policy evaluation, Redis caching, PostgreSQL persistence, and audit logging.
 
 [![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)](https://www.java.com/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3-6DB33F?logo=springboot\&logoColor=white)](https://spring.io/projects/spring-boot)
@@ -82,50 +82,33 @@ Authorization is integrated into the request lifecycle through security filters 
 
 ---
 
-# 🏗️ Architecture
+## 🏗️ Full-Stack Architecture
 
 ```text
-                    ┌─────────────────────────┐
-                    │       REST Client       │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │    REST Controllers    │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │   Spring Security       │
-                    │ JWT Authentication      │
-                    │ Authorization Filter    │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │ Policy Evaluation       │
-                    │ Engine                  │
-                    └────────────┬────────────┘
-                                 │
-                  ┌──────────────┼──────────────┐
-                  │              │              │
-                  ▼              ▼              ▼
-             PostgreSQL        Redis       Policy Rules
-                  │              │              │
-                  └──────────────┼──────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │   Authorization Result  │
-                    │       ALLOW / DENY      │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │     Audit Service       │
-                    └─────────────────────────┘
+┌─────────────────────────────────────┐
+│       Next.js / TypeScript          │
+│          Frontend UI                │
+└──────────────────┬──────────────────┘
+                   │
+                   │ REST API
+                   ▼
+┌─────────────────────────────────────┐
+│       Java 17 / Spring Boot         │
+│          Backend API                │
+├─────────────────────────────────────┤
+│ Spring Security + JWT               │
+│ Policy Evaluation Engine            │
+│ Business Services                   │
+│ Audit Logging                       │
+└───────────────┬─────────────────────┘
+                │
+        ┌───────┴────────┐
+        ▼                ▼
+┌──────────────┐  ┌──────────────┐
+│ PostgreSQL   │  │    Redis     │
+│ Persistence  │  │    Cache     │
+└──────────────┘  └──────────────┘
 ```
-
 ---
 
 # 🔄 Authorization Flow
@@ -232,6 +215,12 @@ The system follows a **deny-overrides-allow** strategy and defaults to deny when
 * Spring Data JPA
 * Maven
 
+### Frontend
+- Next.js
+- TypeScript
+- React
+- Tailwind CSS
+
 ### Security
 
 * JWT
@@ -294,7 +283,31 @@ src/main/java/com/enterprise/pbac/
 │
 └── PbacSystemApplication.java
 ```
+---
 
+### Why I prefer this
+
+Your pinned card will now say:
+
+**PBAC**  
+> Full-stack policy-based access control system with Java/Spring Boot, Next.js/TypeScript, JWT, PostgreSQL and Redis.  
+> 🔵 TypeScript
+
+And the recruiter thinks:
+
+> **"Oh, this is full-stack. Java backend + TypeScript frontend."**
+
+That's actually a **better signal for Software Engineer roles**.
+
+---
+
+### One more thing I noticed
+
+Your repository currently has **only 4 commits**, but the architecture is substantially more interesting than the commit count suggests. :contentReference[oaicite:1]{index=1}
+
+So I'd make **one real improvement** before touching anything else: add a proper frontend/backend directory explanation and screenshots of the application.
+
+**Don't manipulate the language detection. Keep TypeScript.** Your repo genuinely contains TypeScript, and your profile now looks more credible because of it.
 ---
 
 # 🔌 REST API
