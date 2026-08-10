@@ -1,195 +1,174 @@
-# Policy-Based Access Control (PBAC) System
+# 🔐 Policy-Based Access Control (PBAC) System
 
-An enterprise-grade, production-ready authorization system built with **Java 17** and **Spring Boot 3**, implementing dynamic policy-driven access control with runtime evaluation, caching, and comprehensive audit logging.
+> An enterprise-style authorization system built with Java 17 and Spring Boot 3, providing dynamic policy evaluation, JWT authentication, Redis caching, PostgreSQL persistence, and immutable audit logging.
 
-## 🏗️ Architecture Overview
+[![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3-6DB33F?logo=springboot\&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?logo=springsecurity\&logoColor=white)](https://spring.io/projects/spring-security)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql\&logoColor=white)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis\&logoColor=white)](https://redis.io/)
+[![Maven](https://img.shields.io/badge/Maven-C71A36?logo=apachemaven\&logoColor=white)](https://maven.apache.org/)
 
-### Clean Layered Architecture
+---
 
-```
-┌─────────────────────────────────────────────────┐
-│         REST API Controllers (HTTP)             │
-└──────────────────┬──────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────┐
-│    Security Filters (JWT, Authorization)       │
-└──────────────────┬──────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────┐
-│      Application Services (Business Logic)     │
-├─────────────────────────────────────────────────┤
-│ • AuthenticationService                        │
-│ • PolicyService                                │
-│ • AuditService                                 │
-│ • UserService                                  │
-└──────────────────┬──────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────┐
-│        Domain Layer (Entities & Logic)         │
-├─────────────────────────────────────────────────┤
-│ • PolicyEvaluationEngine                       │
-│ • Condition Evaluation                         │
-│ • Authorization Context Model                  │
-└──────────────────┬──────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────┐
-│    Infrastructure (DB, Cache, Security)        │
-├─────────────────────────────────────────────────┤
-│ • JPA Repositories                             │
-│ • Redis Caching                                │
-│ • JWT Token Provider                           │
-└─────────────────────────────────────────────────┘
-```
+## 📌 Overview
 
-## 🔐 Key Features
+Traditional role-based authorization can become difficult to maintain when access decisions depend on multiple factors such as:
 
-### 1. **JWT-Based Authentication**
-- Secure signup/login with BCrypt password hashing
-- Access and refresh token generation
-- Token validation and user context extraction
+* User role
+* Department
+* Resource
+* Action
+* Time
+* IP address
+* Policy priority
 
-### 2. **Dynamic Policy Management**
-- CRUD operations on authorization policies
-- JSON-based policy definition with flexible subject, resource, and action attributes
-- Priority-based policy evaluation
-- Policy caching with Redis for high performance
+This project implements a **Policy-Based Access Control (PBAC)** system where authorization decisions are determined dynamically from configurable policies and request context.
 
-### 3. **Advanced Policy Evaluation Engine**
-- **Strategy Pattern**: Pluggable evaluation strategies for different policy types
-- **Chain of Responsibility**: Condition evaluation chains
-- **Builder Pattern**: Policy object construction
-- Runtime evaluation of multiple policies
-- DENY-overrides-ALLOW conflict resolution strategy
-- Default deny if no policies match
+The system separates **authentication, authorization, policy evaluation, business logic, data access, caching, and audit logging** into dedicated layers.
 
-### 4. **Spring Security Integration**
-- JWT authentication filter for token extraction
-- Authorization filter intercepts protected endpoints
-- Policy evaluation before controller execution
-- Centralized exception handling
+---
 
-### 5. **Immutable Audit Logging**
-- Append-only audit trail for compliance
-- Detailed logging of all authorization decisions
-- Request context capture for debugging
-- Queryable by user, resource, action, timestamp
+# 🎯 Key Features
 
-### 6. **Separation of Concerns**
-- **Controllers**: HTTP request handling and routing
-- **Services**: Business logic and orchestration
-- **Repositories**: Data access abstraction
-- **Mappers**: DTO/Entity conversion
-- **Engines**: Domain-specific evaluation logic
+### 🔑 JWT Authentication
 
-## 📦 Project Structure
+* User registration and login
+* BCrypt password hashing
+* Access and refresh tokens
+* JWT validation
+* User context extraction
+* Stateless authentication
 
-```
-src/main/java/com/enterprise/pbac/
-├── api/
-│   ├── controller/           # REST endpoints
-│   ├── dto/                  # Data Transfer Objects
-│   └── exception/            # Global exception handling
-├── application/
-│   ├── service/              # Application services
-│   └── exception/            # Custom exceptions
-├── domain/
-│   ├── entity/               # JPA entities
-│   ├── enums/                # Domain enums
-│   └── engine/               # Policy evaluation engine
-│       ├── condition/        # Condition interfaces and implementations
-│       ├── strategy/         # Evaluation strategies
-│       └── model/            # Evaluation context and results
-├── infrastructure/
-│   ├── repository/           # JPA repositories
-│   ├── mapper/               # DTO mappers
-│   ├── cache/                # Redis caching
-│   ├── config/               # Spring configuration
-│   └── security/             # Security components
-└── PbacSystemApplication.java
-```
+### 📋 Dynamic Policy Management
 
-## 🚀 Getting Started
+* Create, read, update and delete policies
+* JSON-based policy definitions
+* Configurable subjects, resources and actions
+* Policy priorities
+* Runtime policy evaluation
 
-### Prerequisites
-- Java 17+
-- PostgreSQL 12+
-- Redis 6.0+
-- Maven 3.8+
+### 🧠 Policy Evaluation Engine
 
-### Setup
+The authorization engine supports:
 
-1. **Clone and Install**
-```bash
-git clone <repository>
-cd pbac-system
-mvn clean install
-```
+* Multiple policy evaluation strategies
+* Runtime condition evaluation
+* Priority-based policies
+* `DENY` overrides `ALLOW`
+* Default-deny authorization
+* Context-aware access decisions
 
-2. **Configure Database**
-```yaml
-# application.yml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/pbac_db
-    username: postgres
-    password: postgres
+### ⚡ Redis Caching
+
+Policies can be cached using Redis to reduce repeated database lookups during authorization.
+
+### 📝 Audit Logging
+
+Every authorization decision can be recorded with:
+
+* User
+* Resource
+* Action
+* Decision
+* Timestamp
+* Request context
+
+The audit trail is designed as an append-only record for traceability.
+
+### 🛡️ Spring Security Integration
+
+Authorization is integrated into the request lifecycle through security filters before protected controller execution.
+
+---
+
+# 🏗️ Architecture
+
+```text
+                    ┌─────────────────────────┐
+                    │       REST Client       │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │    REST Controllers    │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │   Spring Security       │
+                    │ JWT Authentication      │
+                    │ Authorization Filter    │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │ Policy Evaluation       │
+                    │ Engine                  │
+                    └────────────┬────────────┘
+                                 │
+                  ┌──────────────┼──────────────┐
+                  │              │              │
+                  ▼              ▼              ▼
+             PostgreSQL        Redis       Policy Rules
+                  │              │              │
+                  └──────────────┼──────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │   Authorization Result  │
+                    │       ALLOW / DENY      │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │     Audit Service       │
+                    └─────────────────────────┘
 ```
 
-3. **Configure JWT Secret**
-```bash
-export JWT_SECRET="your-production-secret-key-min-32-chars"
+---
+
+# 🔄 Authorization Flow
+
+```text
+User Request
+     ↓
+JWT Authentication
+     ↓
+Extract User Context
+     ↓
+Authorization Filter
+     ↓
+Build Authorization Context
+     ↓
+Fetch Applicable Policies
+     ↓
+Redis Cache / PostgreSQL
+     ↓
+Policy Evaluation Engine
+     ↓
+Evaluate DENY Policies
+     ↓
+Evaluate ALLOW Policies
+     ↓
+Default DENY if no policy matches
+     ↓
+Audit Authorization Decision
+     ↓
+ALLOW / DENY
 ```
 
-4. **Run the Application**
-```bash
-mvn spring-boot:run
-```
+---
 
-Application starts on `http://localhost:8080`
+# 🧩 Policy Model
 
-## 🔑 API Endpoints
+Policies can define access using multiple attributes.
 
-### Authentication
+Example:
 
-**Sign Up**
-```bash
-POST /api/auth/signup
-Content-Type: application/json
-
+```json
 {
-  "email": "user@example.com",
-  "password": "SecurePassword123!"
-}
-```
-
-**Login**
-```bash
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "SecurePassword123!"
-}
-```
-
-**Refresh Token**
-```bash
-POST /api/auth/refresh
-Authorization: Bearer <refresh_token>
-```
-
-### Policy Management
-
-**Create Policy**
-```bash
-POST /api/policies
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "name": "Admin Resource Access",
-  "description": "Allow admin users to access sensitive resources",
+  "name": "Admin Database Access",
   "effect": "ALLOW",
   "priority": 100,
   "subject": {
@@ -207,38 +186,169 @@ Content-Type: application/json
 }
 ```
 
-**Get Policy**
-```bash
-GET /api/policies/{policyId}
-Authorization: Bearer <access_token>
+This allows the system to make authorization decisions based on **who is requesting access, what they are accessing, what action they are performing, and under which conditions**.
+
+---
+
+# 🧠 Policy Evaluation Logic
+
+```text
+                    Incoming Request
+                           │
+                           ▼
+                  Build Context
+                           │
+                           ▼
+                  Find Applicable
+                     Policies
+                           │
+                           ▼
+                    DENY Policies?
+                    /           \
+                  YES            NO
+                   │              │
+                   ▼              ▼
+                 DENY        Check ALLOW
+                                  │
+                           ┌──────┴──────┐
+                           │             │
+                         Match        No Match
+                           │             │
+                           ▼             ▼
+                         ALLOW         DENY
 ```
 
-**Update Policy**
-```bash
-PUT /api/policies/{policyId}
-Authorization: Bearer <access_token>
+The system follows a **deny-overrides-allow** strategy and defaults to deny when no applicable authorization policy grants access.
+
+---
+
+# 🛠️ Technology Stack
+
+### Backend
+
+* Java 17
+* Spring Boot 3
+* Spring Security
+* Spring Data JPA
+* Maven
+
+### Security
+
+* JWT
+* BCrypt
+* Stateless authentication
+* Authorization filters
+
+### Database & Caching
+
+* PostgreSQL
+* Redis
+* HikariCP
+
+### API
+
+* REST APIs
+* JSON
+* DTO-based request/response architecture
+
+### Architecture & Design
+
+* Layered Architecture
+* Strategy Pattern
+* Chain of Responsibility
+* Builder Pattern
+* Repository Pattern
+* DTO Pattern
+* Mapper Pattern
+
+---
+
+# 📂 Project Structure
+
+```text
+src/main/java/com/enterprise/pbac/
+│
+├── api/
+│   ├── controller/
+│   ├── dto/
+│   └── exception/
+│
+├── application/
+│   ├── service/
+│   └── exception/
+│
+├── domain/
+│   ├── entity/
+│   ├── enums/
+│   └── engine/
+│       ├── condition/
+│       ├── strategy/
+│       └── model/
+│
+├── infrastructure/
+│   ├── repository/
+│   ├── mapper/
+│   ├── cache/
+│   ├── config/
+│   └── security/
+│
+└── PbacSystemApplication.java
 ```
 
-**Delete Policy**
-```bash
+---
+
+# 🔌 REST API
+
+## Authentication
+
+### Sign Up
+
+```http
+POST /api/auth/signup
+```
+
+```json
+{
+  "email": "user@example.com",
+  "password": "SecurePassword123!"
+}
+```
+
+### Login
+
+```http
+POST /api/auth/login
+```
+
+### Refresh Token
+
+```http
+POST /api/auth/refresh
+```
+
+---
+
+## Policy Management
+
+```http
+POST   /api/policies
+GET    /api/policies
+GET    /api/policies/{policyId}
+PUT    /api/policies/{policyId}
 DELETE /api/policies/{policyId}
-Authorization: Bearer <access_token>
 ```
 
-**List Policies**
-```bash
-GET /api/policies
-Authorization: Bearer <access_token>
-```
+---
 
-### Authorization
+## Authorization
 
-**Check Authorization**
-```bash
+```http
 POST /api/authorization/check
-Authorization: Bearer <access_token>
-Content-Type: application/json
+```
 
+Example:
+
+```json
 {
   "resource": "database",
   "action": "READ",
@@ -248,152 +358,189 @@ Content-Type: application/json
 }
 ```
 
-### Audit
+---
 
-**Get User Audit Logs**
-```bash
-GET /api/audit/user/{userId}?page=0&size=10
-Authorization: Bearer <access_token>
+## Audit
+
+```http
+GET /api/audit/user/{userId}
+GET /api/audit/denied
 ```
-
-**Get Denied Authorizations**
-```bash
-GET /api/audit/denied?page=0&size=10
-Authorization: Bearer <access_token>
-```
-
-## 🔄 Authorization Flow
-
-```
-1. User Request
-   ↓
-2. JwtAuthenticationFilter
-   → Extract and validate JWT token
-   → Set user context (userId, email)
-   ↓
-3. AuthorizationFilter
-   → Extract resource and action from request
-   → Build AuthorizationContext
-   ↓
-4. PolicyEvaluationEngine
-   → Fetch applicable policies (cached)
-   → Evaluate DENY policies first
-   → Evaluate ALLOW policies
-   → Default to DENY
-   ↓
-5. AuditService
-   → Log authorization decision
-   → Store in audit trail
-   ↓
-6. Response
-   → Allow or deny with reason
-```
-
-## 📋 Policy Definition Format
-
-```json
-{
-  "name": "Policy Name",
-  "effect": "ALLOW|DENY",
-  "priority": 0,
-  "subject": {
-    "role": "admin|user|*",
-    "department": "engineering|sales|*"
-  },
-  "resource": "database|files|api",
-  "action": "READ|WRITE|DELETE|*",
-  "conditions": {
-    "timeRange": {
-      "start": "HH:MM",
-      "end": "HH:MM"
-    },
-    "ipRange": "192.168.1.0/24"
-  }
-}
-```
-
-## 🎯 Design Patterns Used
-
-1. **Strategy Pattern**: `PolicyEvaluationStrategy` for pluggable evaluation logic
-2. **Chain of Responsibility**: `Condition` interface for condition evaluation chains
-3. **Builder Pattern**: `AuthorizationContext` and `PolicyEvaluationResult` builders
-4. **Repository Pattern**: Data access abstraction with Spring Data JPA
-5. **DTO Pattern**: Separation of internal entities from API contracts
-6. **Mapper Pattern**: Clean conversion between entities and DTOs
-
-## 🔒 Security Features
-
-- **Password Security**: BCrypt hashing with salt
-- **Token Security**: HS512 JWT signing with rotation support
-- **SQL Injection Prevention**: Parameterized queries via JPA
-- **XSS Prevention**: Proper JSON encoding in responses
-- **CSRF Protection**: Stateless authentication (no cookies)
-- **Audit Trail**: Immutable logging for compliance
-
-## 📊 Database Schema Highlights
-
-- **Users**: User accounts with email uniqueness
-- **User Attributes**: Flexible key-value store for custom attributes
-- **Policies**: Authorization rules with JSON-based definitions
-- **Audit Logs**: Immutable append-only authorization log
-- **Indexes**: Optimized for policy evaluation and audit queries
-
-## ⚡ Performance Optimizations
-
-- **Redis Caching**: Policy cache with TTL-based invalidation
-- **Batch Processing**: Efficient policy evaluation
-- **Connection Pooling**: HikariCP with optimized parameters
-- **Database Indexes**: Strategic indexes on hot query paths
-- **Lazy Loading**: Optimized entity relationships
-
-## 🧪 Testing
-
-```bash
-# Run tests
-mvn test
-
-# Run with coverage
-mvn clean test jacoco:report
-```
-
-## 📝 Configuration
-
-See `application.yml` for:
-- Database connection pooling
-- Redis caching parameters
-- JWT token expiration
-- Logging levels
-- Spring JPA settings
-
-## 🚀 Production Deployment
-
-1. Set strong JWT secret
-2. Use PostgreSQL connection pooling
-3. Enable Redis cluster for high availability
-4. Configure HTTPS/TLS
-5. Set up centralized logging
-6. Enable monitoring and alerting
-7. Implement rate limiting
-
-## 📚 Further Enhancements
-
-- [ ] OAuth2/OIDC integration
-- [ ] Multi-factor authentication
-- [ ] Role-based access control (RBAC)
-- [ ] Attribute-based access control (ABAC)
-- [ ] Policy versioning and rollback
-- [ ] GraphQL API
-- [ ] Metrics and monitoring endpoints
-- [ ] Policy simulation and testing
-
-## 📄 License
-
-Enterprise Commercial License
-
-## 👨‍💼 Support
-
-For issues and feature requests, create an issue in the repository.
 
 ---
 
-**Built with enterprise-grade practices for production readiness.**
+# 🔒 Security Design
+
+The project incorporates several security practices:
+
+* BCrypt password hashing
+* JWT-based authentication
+* Access and refresh tokens
+* Stateless authentication
+* Parameterized database queries through JPA
+* Centralized exception handling
+* Authorization before protected controller execution
+* Immutable audit logging
+* Default-deny authorization
+
+---
+
+# 🧱 Design Patterns
+
+| Pattern                 | Usage                                        |
+| ----------------------- | -------------------------------------------- |
+| Strategy                | Pluggable policy evaluation strategies       |
+| Chain of Responsibility | Sequential condition evaluation              |
+| Builder                 | Authorization context and evaluation results |
+| Repository              | Database access abstraction                  |
+| DTO                     | Separation of API contracts from entities    |
+| Mapper                  | Entity ↔ DTO conversion                      |
+
+These patterns help keep the authorization engine modular and allow new policy conditions or evaluation strategies to be introduced without tightly coupling them to the rest of the application.
+
+---
+
+# ⚡ Performance
+
+The system incorporates several performance-oriented design decisions:
+
+* Redis policy caching
+* TTL-based cache invalidation
+* Database indexing
+* Connection pooling with HikariCP
+* Lazy entity loading
+* Efficient policy retrieval
+* Separation of authorization evaluation from persistence logic
+
+---
+
+# 🧪 Testing
+
+Run the test suite:
+
+```bash
+mvn test
+```
+
+Generate test coverage:
+
+```bash
+mvn clean test jacoco:report
+```
+
+---
+
+# 🚀 Getting Started
+
+## Prerequisites
+
+* Java 17+
+* Maven 3.8+
+* PostgreSQL 12+
+* Redis 6+
+
+## Clone
+
+```bash
+git clone https://github.com/Raj140503/PBAC-Policy-Based-Access-Control.git
+
+cd PBAC-Policy-Based-Access-Control
+```
+
+## Build
+
+```bash
+mvn clean install
+```
+
+## Configure PostgreSQL
+
+Create a database:
+
+```text
+pbac_db
+```
+
+Configure the application datasource in `application.yml`.
+
+## Configure JWT
+
+Set a secure JWT secret through an environment variable:
+
+```bash
+export JWT_SECRET="your-secure-secret-key"
+```
+
+## Run
+
+```bash
+mvn spring-boot:run
+```
+
+The application starts on:
+
+```text
+http://localhost:8080
+```
+
+---
+
+# 📊 Database Model
+
+The system uses PostgreSQL for persistent storage of:
+
+* Users
+* User attributes
+* Policies
+* Authorization decisions
+* Audit logs
+
+Redis is used for policy caching to reduce repeated database access during authorization checks.
+
+---
+
+# 🎓 What This Project Demonstrates
+
+This project demonstrates practical experience with:
+
+* Backend application architecture
+* Secure REST API development
+* Authentication and authorization
+* Spring Security
+* JWT
+* Policy-based access control
+* Database design
+* Redis caching
+* Design patterns
+* Clean separation of concerns
+* API design
+* Audit and compliance concepts
+* Performance optimization
+* Automated testing
+
+---
+
+# 🚀 Future Improvements
+
+* OAuth2 / OpenID Connect integration
+* Multi-factor authentication
+* RBAC integration
+* ABAC integration
+* Policy versioning and rollback
+* Policy simulation and testing
+* Metrics and monitoring endpoints
+* Rate limiting
+* GraphQL API
+* Centralized observability
+* Containerized deployment
+
+---
+
+# 👨‍💻 Author
+
+## Raj Patil
+
+---
+
+
+⭐ If you find this project useful, consider giving it a star.
